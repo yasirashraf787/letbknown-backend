@@ -10,7 +10,7 @@ require('dotenv').config();
 //     access_token: '2939667442-xbjo0bbKimmi0Wqa9ER6T4UccnDny2MuRfVL6Qh', //'1375393061228908545-O1KHdanhQF4bWbLFkBINexZwDEdSk8',
 //     access_token_secret: 'ZMpIFUseW48zrw62dlfvJyzFj24H8ifQFBmdz2fSYQiJM' //'4QaKrCp2HRUlrkdWvOrEwnAaZuobLn0ofUkaklnzEnsaE'
 // });
-
+// test commit
 const consumer = new oauth.OAuth('https://api.twitter.com/oauth/request_token', 'https://api.twitter.com/oauth/access_token',
 process.env.CONSUMER_KEY, process.env.CONSUMER_SECRET, "1.0A", null, "HMAC-SHA1");
 
