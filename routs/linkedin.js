@@ -29,15 +29,49 @@ router.get('/callback', async (request, response) => {
         return;
     }
     else
-    {      
-        response.redirect('https://localhost:4200/letthemknow?code=' + request.query.code);  
-        // try{
-        //     const data = await getAccessToken(request);
-        //     response.send(data);
-        // } catch(err) {
-        //     response.json(err);
-        // }
+    {
+        try{
+            const data = await getAccessToken(request);
+            //     console.log(data.access_token);
+            if(data.access_token){
+                request.session.token = data.access_token;
+                request.session.authorized = true;
+                console.log('sessionToken: ', request.session);
+            }
+            // response.redirect('/linkedin/user');
+            response.redirect('https://localhost:4200/letthemknow?authorized=' + request.session.authorized + '&token=' + data.access_token);
+            // response.status(200).send('Get access token');
+        } catch(err) {
+            response.json(err);
+        }
     }
+});
+
+router.get('/user', async (request, response) => {
+    
+    // response.status(200).json({Authorized: request.query.isAuthorized, token: request.query.token});
+    const isAuthorized = request.query.isAuthorized;
+    if(!isAuthorized) {
+        response.status(200).json({Authorized: false});
+    } else {
+        try {
+            const id = await getLinkedinId(request);
+            response.status(200).json({userId: id});
+        } catch(err) {
+            response.send(err);
+        }
+    }
+});
+
+router.post('/publish', (request, response) => {
+    const { title, text, url, thumb, id } = request.body;
+    response.status(200).send({
+        Title: title,
+        Text: text,
+        Url: url,
+        Thumb: thumb,
+        ID: id
+    })
 });
 
 function getAccessToken(request) {
@@ -60,8 +94,62 @@ function getAccessToken(request) {
     });
 }
 
-// router.get('/user', (request, response) => {
-//     response.send(response.body);
-// });
+function getLinkedinId(request) {
+    return new Promise((resolve, reject) => {
+        const url = 'https://api.linkedin.com/v2/me';
+        const headers = {
+            'Authorization': 'Bearer ' + request.query.token,
+            'cache-control': 'no-cache',
+            'X-Restli-Protocol-Version': '2.0.0' 
+        };
+
+        req.get({ url: url, headers: headers }, (err, response, body) => {
+            if(err) {
+                reject(err);
+            }
+            resolve(JSON.parse(body).id);
+        });
+    });
+}
+
+function publishContent(request, linkedinId, content) {
+    const url = 'https://api.linkedin.com/v2/shares';
+    const { title, text, shareUrl, shareThumbnailUrl } = content;
+    const body = {
+        owner: 'urn:li:person:' + linkedinId,
+        subject: title,
+        text: {
+            text: text
+        },
+        content: {
+            contentEntities: [{
+                entityLocation: shareUrl,
+                thumbnails: [{
+                    resolvedUrl: shareThumbnailUrl
+                }]
+            }],
+            title: title
+        },
+        distribution: {
+            linkedInDistributionTarget: {}
+        }
+    };
+
+    const headers = {
+        'Authorization': 'Bearer ' + request.query.token,
+        'cache-control': 'no-cache',
+        'X-Restli-Protocol-Version': '2.0.0',
+        'x-li-format': 'json'
+    };
+
+    return new Promise((resolve, reject) => {
+        request.post({ url: url, json: body, headers: headers }, (err, response, body) => {
+            if(err){
+                reject(err);
+            }
+            resolve(body);
+        });
+    });
+}
 
 module.exports = router;
