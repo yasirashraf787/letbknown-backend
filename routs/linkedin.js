@@ -20,7 +20,7 @@ router.get('/auth', (request, response) => {
 });
 
 router.get('/callback_error', (request, response) => {
-    response.send('Some thing went wrong.');
+        response.redirect('https://localhost:4200/letthemknow');
 });
 
 router.get('/callback', async (request, response) => {
@@ -63,16 +63,25 @@ router.get('/user', async (request, response) => {
     }
 });
 
-router.post('/publish', (request, response) => {
+router.post('/publish', async (request, response) => {
     const { title, text, url, thumb, id } = request.body;
-    response.status(200).send({
-        Title: title,
-        Text: text,
-        Url: url,
-        Thumb: thumb,
-        ID: id
-    })
+    const content = {
+        title: title,
+        text: text,
+        shareUrl: url,
+        shareThumbnailUrl: thumb
+    };
+
+    try {
+        const res = await publishContent(request, id, content);
+        response.json({success: 'Post published successfully. ', result: res});
+    } catch(err) {
+        response.json({error: 'Unable to publish your content. ', errorMsg: err});
+    }
 });
+
+router.get('/logout', (request, response) => {
+})
 
 function getAccessToken(request) {
     const code = request.query.code;
@@ -136,14 +145,14 @@ function publishContent(request, linkedinId, content) {
     };
 
     const headers = {
-        'Authorization': 'Bearer ' + request.query.token,
+        'Authorization': 'Bearer ' + request.query.access_token,
         'cache-control': 'no-cache',
         'X-Restli-Protocol-Version': '2.0.0',
         'x-li-format': 'json'
     };
 
     return new Promise((resolve, reject) => {
-        request.post({ url: url, json: body, headers: headers }, (err, response, body) => {
+        req.post({ url: url, json: body, headers: headers }, (err, response, body) => {
             if(err){
                 reject(err);
             }
