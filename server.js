@@ -1,23 +1,10 @@
-const express = require('express');
-const app = express();
-const bodyParser = require('body-parser');
-const cors = require('cors');
-const twitterRout = require('./routs/twitter');
-const linkedinRout = require('./routs/linkedin');
-const session = require('express-session');
-require('dotenv').config();
+const app = require('./app');
+const http = require('http');
 
-app.use(cors());
-app.use(bodyParser.urlencoded({extended: false}));
-app.use(bodyParser.json());
-app.use(session({
-    secret: 'secret',
-    resave: true,
-    saveUninitialized: true
-}));
-app.use('/twitter', twitterRout);
-app.use('/linkedin', linkedinRout);
+const port = process.env.PORT || 3000;
 
-app.listen(3000, () => {
-    console.log('Server running');
+const server = http.createServer(app);
+
+server.listen(port, () => {
+    console.log('Server running on port:', port);
 })
