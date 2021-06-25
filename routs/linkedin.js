@@ -10,7 +10,7 @@ const accessTokenURL = 'https://www.linkedin.com/oauth/v2/accessToken';
 const redirectURI = 'http://localhost:3000/linkedin/callback';
 
 router.get('/auth', (request, response) => {
-    
+
     const scope = encodeURIComponent('r_liteprofile r_emailaddress w_member_social');
     const url = `${authorizationURL}?client_id=${clientID}&redirect_uri=${encodeURIComponent(redirectURI)}&response_type=code&scope=${scope}`
 
@@ -20,44 +20,45 @@ router.get('/auth', (request, response) => {
 });
 
 router.get('/callback_error', (request, response) => {
-        response.redirect('https://localhost:4200/letthemknow');
+    response.redirect('https://localhost:4200/letthemknow');
 });
 
 router.get('/callback', async (request, response) => {
-    if(!request.query.code){
+    if (!request.query.code) {
         response.redirect('/linkedin/callback_error');
         return;
     }
-    else
-    {
-        try{
+    else {
+        try {
             const data = await getAccessToken(request);
-            //     console.log(data.access_token);
-            if(data.access_token){
+            // console.log(data);
+            if (data.access_token) {
+                // console.log('Line 36: ', data);
                 request.session.token = data.access_token;
                 request.session.authorized = true;
+                console.log(request.session);
                 console.log('sessionToken: ', request.session);
             }
             // response.redirect('/linkedin/user');
             response.redirect('https://localhost:4200/letthemknow?authorized=' + request.session.authorized + '&token=' + data.access_token);
             // response.status(200).send('Get access token');
-        } catch(err) {
+        } catch (err) {
             response.json(err);
         }
     }
 });
 
 router.get('/user', async (request, response) => {
-    
+
     // response.status(200).json({Authorized: request.query.isAuthorized, token: request.query.token});
     const isAuthorized = request.query.isAuthorized;
-    if(!isAuthorized) {
-        response.status(200).json({Authorized: false});
+    if (!isAuthorized) {
+        response.status(200).json({ Authorized: false });
     } else {
         try {
             const id = await getLinkedinId(request);
-            response.status(200).json({userId: id});
-        } catch(err) {
+            response.status(200).json({ userId: id });
+        } catch (err) {
             response.send(err);
         }
     }
@@ -74,9 +75,9 @@ router.post('/publish', async (request, response) => {
 
     try {
         const res = await publishContent(request, id, content);
-        response.json({success: 'Post published successfully. ', result: res});
-    } catch(err) {
-        response.json({error: 'Unable to publish your content. ', errorMsg: err});
+        response.json({ success: 'Post published successfully. ', result: res });
+    } catch (err) {
+        response.json({ error: 'Unable to publish your content. ', errorMsg: err });
     }
 });
 
@@ -94,8 +95,8 @@ function getAccessToken(request) {
     };
 
     return new Promise((resolve, reject) => {
-        req.post({url: accessTokenURL, form: body}, (err, response, body) => {
-            if(err){
+        req.post({ url: accessTokenURL, form: body }, (err, response, body) => {
+            if (err) {
                 reject(err);
             }
             resolve(JSON.parse(body));
@@ -109,11 +110,11 @@ function getLinkedinId(request) {
         const headers = {
             'Authorization': 'Bearer ' + request.query.token,
             'cache-control': 'no-cache',
-            'X-Restli-Protocol-Version': '2.0.0' 
+            'X-Restli-Protocol-Version': '2.0.0'
         };
 
         req.get({ url: url, headers: headers }, (err, response, body) => {
-            if(err) {
+            if (err) {
                 reject(err);
             }
             resolve(JSON.parse(body).id);
@@ -153,7 +154,7 @@ function publishContent(request, linkedinId, content) {
 
     return new Promise((resolve, reject) => {
         req.post({ url: url, json: body, headers: headers }, (err, response, body) => {
-            if(err){
+            if (err) {
                 reject(err);
             }
             resolve(body);
