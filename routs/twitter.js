@@ -47,7 +47,7 @@ router.get('/startAuth', (request, response) => {
             console.log("oauthRequestTokenSecret " + token_secret);
             response.status(200).send({redirectUrl: "https://twitter.com/oauth/authorize?oauth_token=" + token,
                 oauthRequestToken: token,
-                oauthRequestTokenSecret: token_secret 
+                oauthRequestTokenSecret: token_secret
             })
         }
     });

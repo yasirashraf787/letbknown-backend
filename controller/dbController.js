@@ -69,3 +69,93 @@ exports.SignIn = (req, res) => {
         res.status(500).json({ err: error });
     }
 };
+
+exports.Sent_Post = (req, res) => {
+    const { user_id, content, status, profile } = req.body;
+    if (status == 'sent') {
+        var sql = 'INSERT INTO postcontent SET ?';
+        var values = {
+            user_id: user_id,
+            content: content,
+            status: status,
+            profile: profile,
+            created_date: new Date(),
+            sent_date: new Date()
+        };
+
+        db.query(sql, [values], (error, result) => {
+            if (error) {
+                console.log(error);
+                res.send('Something went wrong.');
+            }
+            else {
+                console.log(result);
+                res.send(result);
+            }
+        });
+    }
+};
+
+exports.Draft_Post = (req, res) => {
+    const { user_id, content, status, profile } = req.body;
+    if (status == 'draft') {
+        var sql = 'INSERT INTO postcontent SET ?';
+        var values = {
+            user_id: user_id,
+            content: content,
+            status: status,
+            profile: profile,
+            created_date: new Date()
+            // updated_date: new Date()
+        };
+
+        db.query(sql, [values], (error, result) => {
+            if (error) {
+                console.log(error);
+                res.send('Something went wrong.');
+            }
+            else {
+                console.log(result);
+                res.send(result);
+            }
+        });
+    }
+};
+
+exports.Get_Sent_Content = (req, res) => {
+    try {
+        db.query("SELECT * FROM postcontent WHERE status = 'sent' ORDER BY sent_date DESC", (error, result) => {
+            if (error) {
+                console.log(error);
+                res.status(500).json({ err: error });
+            }
+            else {
+                console.log(result);
+                res.status(200).json({ data: result });
+            }
+        });
+    }
+    catch (error) {
+        console.log(error);
+        res.status(500).json({ err: error });
+    }
+};
+
+exports.Get_Draft_Content = (req, res) => {
+    try {
+        db.query("SELECT * FROM postcontent WHERE status = 'draft' ORDER BY id DESC", (error, result) => {
+            if (error) {
+                console.log(error);
+                res.status(500).json({ err: error });
+            }
+            else {
+                console.log(result);
+                res.status(200).json({ data: result });
+            }
+        });
+    }
+    catch (error) {
+        console.log(error);
+        res.status(500).json({ err: error });
+    }
+};

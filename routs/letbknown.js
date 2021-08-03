@@ -9,11 +9,11 @@ require('dotenv').config()
 
 router.post('/Signup', dbController.SignUp);
 router.post('/Login', dbController.SignIn);
+router.post('/Sent', dbController.Sent_Post);
+router.post('/Draft', dbController.Draft_Post);
 
-router.post('/Sent', (req, res) => {
-    const { user_id, postDetail } = req.body;
-    // res.status(200).json({ data: req.body });
-    // db.query('INSERT INTO ')
-});
+router.get('/GetSentContent', dbController.Get_Sent_Content);
+router.get('/GetDraftContent', dbController.Get_Draft_Content);
+
 
 module.exports = router;

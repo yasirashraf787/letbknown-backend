@@ -20,7 +20,8 @@ router.get('/auth', (request, response) => {
 });
 
 router.get('/callback_error', (request, response) => {
-    response.redirect('https://localhost:4200/letthemknow');
+    // response.redirect('https://localhost:4200/letthemknow');
+    response.redirect('https://localhost:4200/Socialmediaprofile');
 });
 
 router.get('/callback', async (request, response) => {
@@ -40,7 +41,7 @@ router.get('/callback', async (request, response) => {
                 console.log('sessionToken: ', request.session);
             }
             // response.redirect('/linkedin/user');
-            response.redirect('https://localhost:4200/letthemknow?authorized=' + request.session.authorized + '&token=' + data.access_token);
+            response.redirect('https://localhost:4200/Socialmediaprofile?authorized=' + request.session.authorized + '&token=' + data.access_token);
             // response.status(200).send('Get access token');
         } catch (err) {
             response.json(err);

@@ -1,5 +1,6 @@
 const express = require('express');
 const app = express();
+const bodyParser = require('body-parser');
 const cors = require('cors');
 const session = require('express-session');
 require('dotenv').config();
@@ -14,6 +15,7 @@ const letbknownRoute = require('./routs/letbknown');
 app.use(cors());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
+app.use(bodyParser.json());
 app.use(session({
     secret: 'my_linkedin_secret_5612705',
     resave: false,
