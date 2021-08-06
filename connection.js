@@ -3,7 +3,8 @@ const db = mysql.createConnection({
     host: 'localhost',
     user: 'root',
     password: 'mysql123',
-    database: 'letbknown'
+    database: 'letbknown',
+    timezone: 'UTC+0'
 });
 
 db.connect((err) => {
