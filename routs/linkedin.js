@@ -32,7 +32,7 @@ router.get('/callback', async (request, response) => {
     else {
         try {
             const data = await getAccessToken(request);
-            // console.log(data);
+            console.log(data);
             if (data.access_token) {
                 // console.log('Line 36: ', data);
                 request.session.token = data.access_token;
@@ -57,8 +57,9 @@ router.get('/user', async (request, response) => {
         response.status(200).json({ Authorized: false });
     } else {
         try {
-            const id = await getLinkedinId(request);
-            response.status(200).json({ userId: id });
+            const user = await getLinkedinId(request);
+            console.log('userID', user);
+            response.status(200).json({ userData: user });
         } catch (err) {
             response.send(err);
         }
@@ -118,7 +119,8 @@ function getLinkedinId(request) {
             if (err) {
                 reject(err);
             }
-            resolve(JSON.parse(body).id);
+            // console.log('Body', JSON.parse(body).localizedFirstName);
+            resolve(JSON.parse(body));
         });
     });
 }

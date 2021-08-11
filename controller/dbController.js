@@ -3,6 +3,7 @@ const router = express.Router();
 const db = require('../connection');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const req = require('request');
 
 // Job Scheduler
 const JobScheduler = require('cron').CronJob;
@@ -387,28 +388,51 @@ exports.Job = {
                         console.log('Error', error);
                     }
                     else {
-                        console.log('Result', result);
-                        console.log('Result Length', result.length);
-                        // console.log('ID', result[0].id)
-                        if (result.length > 0) {
-                            var sql = "UPDATE postcontent SET ? WHERE id = " + result[0].id + " AND status = 'scheduled'";
-                            var values = {
-                                status: 'sent',
-                                sent_date: new Date(),
-                                updated_date: null,
-                                scheduled_date: null
-                            }
 
-                            db.query(sql, [values], (error, result) => {
-                                if (error) {
-                                    console.log(error);
-                                    // res.status(500).json({ err: error });
+                        for (let i = 0; i < result.length; i++) {
+                            console.log('Result', result);
+                            console.log('Result Length', result.length);
+                            console.log('Content', result[i].content);
+                            // console.log('ID', result[0].id)
+                            if (result.length > 0) {
+                                var sql = "UPDATE postcontent SET ? WHERE id = " + result[i].id + " AND status = 'scheduled'";
+                                var values = {
+                                    status: 'sent',
+                                    sent_date: new Date(),
+                                    updated_date: null,
+                                    scheduled_date: null
                                 }
-                                else {
-                                    console.log(result);
-                                    // res.status(200).json({ data: result });
-                                }
-                            });
+
+                                console.log(sql);
+
+                                db.query(sql, [values], (error, dbResult) => {
+                                    if (error) {
+                                        console.log(error);
+                                        // res.status(500).json({ err: error });
+                                    }
+                                    else {
+                                        console.log(dbResult);
+
+                                        if (result[i].profile == 'facebook') {
+                                            req.post({
+                                                headers: { 'content-type': 'application/x-www-form-urlencoded' },
+                                                url: "https://graph.facebook.com/111230367702601/feed?message=" + result[i].content + "&access_token=EAAKGddpdmc0BAApAemqzndZB8jaGEN6aXU386V4FLr330NAESOeNTTLteV2ern3BcphIn3KwbUAecaJg9du2RwfiZBfyWuZCbABRV7C1SZBNspLw2ZAvLPPNhFCLXmzEsc2PhCUpAOgLGMBI00hzUWf9Au7z5WLH8KPy8Ou3BvRI0yoSooiFb",
+                                            }, function (error, res, body) {
+                                                if (error) {
+                                                    response.status(500).json({ error: error });
+                                                }
+                                                else {
+                                                    console.log(body);
+                                                    console.log('Content Posted', result[i].content);
+                                                    // response.status(200).json({ msg: 'Content Posted' });
+                                                }
+                                            });
+                                        }
+
+                                        // res.status(200).json({ data: result });
+                                    }
+                                });
+                            }
                         }
                     }
                 });

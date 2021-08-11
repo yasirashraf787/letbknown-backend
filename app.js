@@ -7,6 +7,7 @@ require('dotenv').config();
 
 const twitterRoute = require('./routs/twitter');
 const linkedinRoute = require('./routs/linkedin');
+const facebookRoute = require('./routs/facebook');
 const letbknownRoute = require('./routs/letbknown');
 
 // const mysql = require('./connection');
@@ -25,5 +26,6 @@ app.use(session({
 app.use('/twitter', twitterRoute);
 app.use('/linkedin', linkedinRoute);
 app.use('/letbknown', letbknownRoute);
+app.use('/facebook', facebookRoute);
 
 module.exports = app;
