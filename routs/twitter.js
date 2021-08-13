@@ -34,6 +34,22 @@ router.post('/post', (request, response) => {
     })
 });
 
+router.get('/getTweets', (request, response) => {
+    console.log('Get tweet call', request.query);
+    const client = new twitter({
+        consumer_key: 'XJ3v59z4tm5HZEUM6AmG6w7Y8',
+        consumer_secret: 'y3aeVcimtbzLO4kqoNpD7GAZewrdQ6RX6OGk16oCMlIyrTZL3z',
+        access_token: request.query.oauth_token,
+        access_token_secret: request.query.oauth_token_secret
+    });
+
+    client.get('tweets/1426180342180990983').then(timeline => {
+        console.log(timeline);
+    }).catch(err => {
+        console.log(err);
+    });
+});
+
 router.get('/startAuth', (request, response) => {
 
     consumer.getOAuthRequestToken((err, token, token_secret, results) => {
