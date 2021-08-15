@@ -7,6 +7,10 @@ const dbController = require('../controller/dbController');
 
 require('dotenv').config()
 
+router.get('/', (req,res)=>{
+    res.json({"message:" : "Welcome To LetBKnown!!!"});
+});
+
 router.post('/Signup', dbController.SignUp);
 router.post('/Login', dbController.SignIn);
 router.post('/Sent', dbController.Sent_Post);
