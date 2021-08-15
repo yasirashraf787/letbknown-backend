@@ -10,6 +10,7 @@ const linkedinRoute = require('./routs/linkedin');
 const facebookRoute = require('./routs/facebook');
 const letbknownRoute = require('./routs/letbknown');
 
+
 // const mysql = require('./connection');
 
 
@@ -28,4 +29,21 @@ app.use('/linkedin', linkedinRoute);
 app.use('/letbknown', letbknownRoute);
 app.use('/facebook', facebookRoute);
 
-module.exports = app;
+const http = require('http');
+
+const port = process.env.PORT || 3000;
+
+const server = http.createServer(app);
+
+app.get('/', (req,res)=>{
+    res.json({"message:" : "Welcome To LetBKnown!!!"});
+});
+
+
+server.listen(port, () => {
+    console.log('Server running on port:', port);
+})
+
+//module.exports = app;
+
+
