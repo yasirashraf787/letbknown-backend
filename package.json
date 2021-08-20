@@ -1,11 +1,8 @@
 {
-  "name": "twitter-backend",
+  "name": "letbknown-backend",
   "version": "1.0.0",
   "description": "",
-  "main": "server.js",
-  "scripts": {
-    "start": "nodemon server"
-  },
+  "main": "app.js",
   "author": "",
   "license": "ISC",
   "dependencies": {
