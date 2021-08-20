@@ -53,7 +53,7 @@ router.get('/getTweets', (request, response) => {
 router.get('/startAuth', (request, response) => {
 
     consumer.getOAuthRequestToken((err, token, token_secret, results) => {
-        console.log(process.env.CONSUMER_SECRET)
+        // console.log(process.env.CONSUMER_SECRET)
         if (err) {
             console.log(err);
             response.status(500).json(err);

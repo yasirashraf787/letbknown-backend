@@ -23,6 +23,10 @@ app.use(session({
     saveUninitialized: false
 }));
 
+// app.use('/', (req, res) => {
+//     res.send('Hello from SSL server');
+// })
+
 app.use('/twitter', twitterRoute);
 app.use('/linkedin', linkedinRoute);
 app.use('/letbknown', letbknownRoute);
