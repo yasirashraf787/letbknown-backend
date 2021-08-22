@@ -7,8 +7,8 @@ const clientID = process.env.CLIENT_ID;
 const clientSecret = process.env.CLIENT_SECRET;
 const authorizationURL = 'https://www.linkedin.com/oauth/v2/authorization';
 const accessTokenURL = 'https://www.linkedin.com/oauth/v2/accessToken';
-//const redirectURI = 'http://localhost:3000/linkedin/callback';
-const redirectURI = 'https://letbknownbackend-env.eba-jpy2yec2.us-east-2.elasticbeanstalk.com/letbknown/callback';
+const redirectURI = 'http://localhost:3000/linkedin/callback';
+//const redirectURI = 'https://letbknownbackend-env.eba-jpy2yec2.us-east-2.elasticbeanstalk.com/letbknown/callback';
 
 router.get('/auth', (request, response) => {
 
