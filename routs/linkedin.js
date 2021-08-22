@@ -41,6 +41,7 @@ router.get('/callback', async (request, response) => {
                 console.log('sessionToken: ', request.session);
             }
             // response.redirect('/linkedin/user');
+            console.log("Before sending request back to letbknown web app link ......")
             response.redirect('https://d3rtuj6gjvv7z0.cloudfront.net/Socialmediaprofile?authorized=' + request.session.authorized + '&token=' + data.access_token);
             // response.status(200).send('Get access token');
         } catch (err) {
