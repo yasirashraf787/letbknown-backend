@@ -344,7 +344,7 @@ exports.Update_Scheduled_Content_By_ID = (req, res) => {
 exports.Job = {
     StartScheduler: function () {
         var job = new JobScheduler('*/1 * * * *', function () {
-            console.log('You will see this message every minut');
+            console.log('####### >>>>>>> You will see this message every minute <<<<<<<< #########');
             let date_ob = new Date();
 
             let date = ("0" + date_ob.getDate()).slice(-2);
