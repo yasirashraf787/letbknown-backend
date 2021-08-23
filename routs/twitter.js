@@ -16,8 +16,8 @@ const consumer = new oauth.OAuth('https://api.twitter.com/oauth/request_token', 
 
 router.post('/post', (request, response) => {
     const client = new twitter({
-        consumer_key: 'XJ3v59z4tm5HZEUM6AmG6w7Y8',
-        consumer_secret: 'y3aeVcimtbzLO4kqoNpD7GAZewrdQ6RX6OGk16oCMlIyrTZL3z',
+        consumer_key: process.env.CONSUMER_KEY, //'XJ3v59z4tm5HZEUM6AmG6w7Y8',
+        consumer_secret: process.env.CONSUMER_SECRET, //'y3aeVcimtbzLO4kqoNpD7GAZewrdQ6RX6OGk16oCMlIyrTZL3z',
         access_token: request.query.oauth_token,
         access_token_secret: request.query.oauth_token_secret
     });
@@ -37,8 +37,8 @@ router.post('/post', (request, response) => {
 router.get('/getTweets', (request, response) => {
     console.log('Get tweet call', request.query);
     const client = new twitter({
-        consumer_key: 'XJ3v59z4tm5HZEUM6AmG6w7Y8',
-        consumer_secret: 'y3aeVcimtbzLO4kqoNpD7GAZewrdQ6RX6OGk16oCMlIyrTZL3z',
+        consumer_key: process.env.CONSUMER_KEY, //'XJ3v59z4tm5HZEUM6AmG6w7Y8',
+        consumer_secret: process.env.CONSUMER_SECRET, //'y3aeVcimtbzLO4kqoNpD7GAZewrdQ6RX6OGk16oCMlIyrTZL3z',
         access_token: request.query.oauth_token,
         access_token_secret: request.query.oauth_token_secret
     });
