@@ -1,7 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const req = require('request');
+const constants = require('../constants');
 require('dotenv').config();
+
+
 
 const clientID = process.env.CLIENT_ID;
 const clientSecret = process.env.CLIENT_SECRET;
@@ -9,7 +12,7 @@ const authorizationURL = 'https://www.linkedin.com/oauth/v2/authorization';
 const accessTokenURL = 'https://www.linkedin.com/oauth/v2/accessToken';
 // const redirectURI = 'http://localhost:3000/linkedin/callback';
 // const redirectURI = 'http://localhost:3000/linkedin/callback';
-const redirectURI = 'https://letbknownbackend-env.eba-jpy2yec2.us-east-2.elasticbeanstalk.com/linkedin/callback';
+const redirectURI =  constants.REDIRECT_URI_AWS; //'https://letbknownbackend-env.eba-jpy2yec2.us-east-2.elasticbeanstalk.com/linkedin/callback';
 
 router.get('/auth', (request, response) => {
 
@@ -24,7 +27,8 @@ router.get('/auth', (request, response) => {
 router.get('/callback_error', (request, response) => {
     // response.redirect('https://localhost:4200/home');
     console.log('Callback error', response);
-    response.redirect('https://d3rtuj6gjvv7z0.cloudfront.net/Socialmediaprofile');
+    // response.redirect('https://d3rtuj6gjvv7z0.cloudfront.net/Socialmediaprofile');
+    response.redirect(constants.CALLBACK_ERROR_REDIRECT_URL_AWS);
 });
 
 router.get('/callback', async (request, response) => {
@@ -47,7 +51,7 @@ router.get('/callback', async (request, response) => {
             // response.redirect('/linkedin/user');
             // response.redirect('https://localhost:4200/Socialmediaprofile?authorized=' + request.session.authorized + '&token=' + data.access_token);
             console.log("Before sending request back to letbknown web app link ......")
-            response.redirect('https://d3rtuj6gjvv7z0.cloudfront.net/Socialmediaprofile?authorized=' + request.session.authorized + '&token=' + data.access_token);
+            response.redirect(constants.CALLBACK_SUCCESS_REDIRECT_URL_AWS + request.session.authorized + '&token=' + data.access_token);
 
             // response.status(200).send('Get access token');
         } catch (err) {
