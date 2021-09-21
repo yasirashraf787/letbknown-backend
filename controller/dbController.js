@@ -14,13 +14,13 @@ exports.SignUp = (req, res) => {
     console.log(req.body);
     const { email, password, firstname, lastname, company, description, type, phoneNumber } = req.body;
 
-    db.query('SELECT email from users WHERE email = ?', [email], async (error, result) => {
+    db.query('SELECT * from users WHERE email = ?', [email], async (error, result) => {
         if (error) {
             console.log(error);
             res.send('Error: ', error);
         }
         if (result.length > 0) {
-            return res.status(200).json({ msg: 'This user is already exist' });
+            return res.status(200).json({ msg: 'This user is already exist', result: result });
         }
 
         let hashedPassword = await bcrypt.hash(password, 2);
@@ -36,13 +36,14 @@ exports.SignUp = (req, res) => {
             }
             else {
                 console.log(result);
-                res.status(200).json({ msg: 'User Registered' });
+                res.status(200).json({ msg: 'User Registered', result: result });
             }
         });
     });
 };
 
 exports.SignIn = (req, res) => {
+    // res.status(200).json({result: 'Hello world'});
     try {
         const { email, password } = req.body;
         if (!email || !password) {
@@ -53,7 +54,7 @@ exports.SignIn = (req, res) => {
             console.log(results);
             const encryptedPass = await bcrypt.compare(password, results[0].password);
             if (!results || !encryptedPass) {
-                res.status(401).json({ msg: 'Invalid Email or Password' });
+                res.status(200).json({ msg: 'Invalid Email or Password', loggedIn: false });
             }
             else {
                 var expiry = new Date();
@@ -64,7 +65,7 @@ exports.SignIn = (req, res) => {
                     expiresIn: parseInt(expiry.getTime() / 1000)
                 });
 
-                res.status(200).json({ msg: 'Login Successfuly', token: token });
+                res.status(200).json({ msg: 'Login Successfuly', token: token, loggedIn: true, results });
             }
         });
 
@@ -74,8 +75,149 @@ exports.SignIn = (req, res) => {
     }
 };
 
+exports.POST_SM_Profile_Data = (req, res) => {
+
+    const {
+        user_id, profile_name, profile_user_id, page_id,
+        user_access_token, page_access_token,
+        oauth_access_token, oauth_access_token_secret
+    } = req.body;
+    //SELECT COUNT(*) AS namesCount FROM names WHERE age = ?
+    db.query('SELECT COUNT(*) AS userProfiles FROM smprofiles WHERE user_id = ?', [user_id], async (error, result) => {
+        console.log('SM profle Result: ', result[0].userProfiles);
+        if (result[0].userProfiles >= 3) {
+            console.log('This UserId has reached the maximum number of profiles');
+            res.status(200).json({ msg: 'This UserId has reached the maximum number of profiles' });
+        }
+        else if (result[0].userProfiles >= 0) {
+            p_name = profile_name.toString();
+            console.log(p_name);
+            // console.log('SELECT * FROM smprofiles WHERE user_id = ' + user_id + ' AND profile_name = ' + profile_name);
+            if (profile_name == 'facebook') {
+                db.query('SELECT * FROM smprofiles WHERE user_id = ' + user_id + ' AND profile_name = "facebook"', (error, result) => {
+                    if (error) {
+                        console.log(error);
+                        res.send('Error: ', error);
+                    }
+                    else {
+                        console.log(result);
+                        if (result.length == 0) {
+                            db.query('INSERT INTO smprofiles SET ?', {
+                                user_id: user_id, profile_name: profile_name, user_access_token: user_access_token,
+                                profile_user_id: profile_user_id, page_id: page_id, page_access_token: page_access_token
+                            }, (error, result) => {
+                                if (error) {
+                                    console.log(error);
+                                    res.send('Something went wrong : ' + error);
+                                }
+                                else {
+                                    console.log(result);
+                                    res.status(200).json({ msg: 'User SM Profile Registered', result });
+                                }
+                            });
+                        }
+                        else if (result.length > 0) {
+                            console.log('Result Length: ' + result.length);
+                            res.status(200).json({ msg: 'This user is already regestered with facebook profile', result });
+                        }
+                    }
+                });
+            }
+            else if (profile_name == 'twitter') {
+                db.query('SELECT * FROM smprofiles WHERE user_id = ' + user_id + ' AND profile_name = "twitter"', (error, result) => {
+                    if (error) {
+                        console.log(error);
+                        res.send('Error: ', error);
+                    }
+                    else {
+                        console.log(result);
+                        if (result.length == 0) {
+                            db.query('INSERT INTO smprofiles SET ?', {
+                                user_id: user_id, profile_name: profile_name,
+                                profile_user_id: profile_user_id,
+                                oauth_access_token: oauth_access_token,
+                                oauth_access_token_secret: oauth_access_token_secret
+                            }, (error, result) => {
+                                if (error) {
+                                    console.log(error);
+                                    res.send('Something went wrong : ' + error);
+                                }
+                                else {
+                                    console.log(result);
+                                    res.status(200).json({ msg: 'User SM Profile Registered', result });
+                                }
+                            });
+                        }
+                        else if (result.length > 0) {
+                            console.log('Result Length: ' + result.length);
+                            res.status(200).json({ msg: 'This user is already regestered with twitter profile', result });
+                        }
+                    }
+                });
+            }
+        }
+    });
+};
+
+exports.GET_SM_Profile_Data = (req, res) => {
+
+    console.log('userId in get smprofile data: ', req.params.id);
+    db.query('SELECT * FROM smprofiles WHERE user_id = ?', [req.params.id], async (error, result) => {
+        console.log('User Result', result);
+        if (error) {
+            console.log(error);
+            res.send('Something went wrong : ' + error);
+        }
+        else {
+            console.log(result);
+            res.status(200).json({ result });
+        }
+    });
+};
+
+exports.UPDATE_SM_Profile_Data_UserAndPageAccessToken = (req, res) => {
+    const user_access_token = req.body.user_access_token;
+    const page_access_token = req.body.page_access_token;
+
+    const oauth_access_token = req.body.oauth_access_token;
+    const oauth_access_token_secret = req.body.oauth_access_token_secret;
+
+    const profile_name = req.body.profile_name;
+
+    console.log('Profile Name: ', profile_name);
+    var sql = null;
+    var values = null;
+
+    if (profile_name == 'facebook') {
+        sql = "UPDATE smprofiles SET ? WHERE user_id = " + req.params.id + " AND profile_name = 'facebook'";
+        values = {
+            user_access_token: user_access_token,
+            page_access_token: page_access_token,
+        }
+    }
+    else if (profile_name == 'twitter') {
+        sql = "UPDATE smprofiles SET ? WHERE user_id = " + req.params.id + " AND profile_name = 'twitter'";
+        values = {
+            oauth_access_token: oauth_access_token,
+            oauth_access_token_secret: oauth_access_token_secret,
+        }
+    }
+
+    db.query(sql, [values], (error, result) => {
+        if (error) {
+            console.log(error);
+            res.status(500).json({ err: error });
+        }
+        else {
+            console.log(result);
+            res.status(200).json({ data: result });
+        }
+    });
+};
+
 exports.Sent_Post = (req, res) => {
     const { user_id, content, status, profile } = req.body;
+    // res.status(200).json({ msg: content });
     if (status == 'sent') {
         var sql = 'INSERT INTO postcontent SET ?';
         var values = {
@@ -156,6 +298,25 @@ exports.Scheduled_Post = (req, res) => {
 exports.Get_Sent_Content = (req, res) => {
     try {
         db.query("SELECT * FROM postcontent WHERE status = 'sent' ORDER BY sent_date DESC", (error, result) => {
+            if (error) {
+                console.log(error);
+                res.status(500).json({ err: error });
+            }
+            else {
+                console.log(result);
+                res.status(200).json({ data: result });
+            }
+        });
+    }
+    catch (error) {
+        console.log(error);
+        res.status(500).json({ err: error });
+    }
+};
+
+exports.Get_Twitter_Sent_Content = (req, res) => {
+    try {
+        db.query("SELECT * FROM postcontent WHERE status = 'sent' AND profile = 'twitter' ORDER BY sent_date DESC", (error, result) => {
             if (error) {
                 console.log(error);
                 res.status(500).json({ err: error });

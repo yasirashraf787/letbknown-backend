@@ -10,14 +10,17 @@ const clientID = process.env.CLIENT_ID;
 const clientSecret = process.env.CLIENT_SECRET;
 const authorizationURL = 'https://www.linkedin.com/oauth/v2/authorization';
 const accessTokenURL = 'https://www.linkedin.com/oauth/v2/accessToken';
+const refreshAccessTokenURL = 'https://www.linkedin.com/oauth/token';
+
 // const redirectURI = 'http://localhost:3000/linkedin/callback';
 // const redirectURI = 'http://localhost:3000/linkedin/callback';
-const redirectURI =  constants.REDIRECT_URI_AWS; //'https://letbknownbackend-env.eba-jpy2yec2.us-east-2.elasticbeanstalk.com/linkedin/callback';
+const redirectURI = constants.REDIRECT_URI_LOCAL; //'https://letbknownbackend-env.eba-jpy2yec2.us-east-2.elasticbeanstalk.com/linkedin/callback';
 
 router.get('/auth', (request, response) => {
 
     const scope = encodeURIComponent('r_liteprofile r_emailaddress w_member_social');
     const url = `${authorizationURL}?client_id=${clientID}&redirect_uri=${encodeURIComponent(redirectURI)}&response_type=code&scope=${scope}`
+    console.log('Auth URL: ', url);
 
     response.status(200).json({
         redirectURL: url
@@ -28,7 +31,7 @@ router.get('/callback_error', (request, response) => {
     // response.redirect('https://localhost:4200/home');
     console.log('Callback error', response);
     // response.redirect('https://d3rtuj6gjvv7z0.cloudfront.net/Socialmediaprofile');
-    response.redirect(constants.CALLBACK_ERROR_REDIRECT_URL_AWS);
+    response.redirect(constants.CALLBACK_ERROR_REDIRECT_URL_LOCAL);
 });
 
 router.get('/callback', async (request, response) => {
@@ -40,7 +43,7 @@ router.get('/callback', async (request, response) => {
     else {
         try {
             const data = await getAccessToken(request);
-            console.log(data);
+            // console.log(data);
             if (data.access_token) {
                 // console.log('Line 36: ', data);
                 request.session.token = data.access_token;
@@ -51,7 +54,9 @@ router.get('/callback', async (request, response) => {
             // response.redirect('/linkedin/user');
             // response.redirect('https://localhost:4200/Socialmediaprofile?authorized=' + request.session.authorized + '&token=' + data.access_token);
             console.log("Before sending request back to letbknown web app link ......")
-            response.redirect(constants.CALLBACK_SUCCESS_REDIRECT_URL_AWS + request.session.authorized + '&token=' + data.access_token);
+            console.log('Data: ', data);
+            console.log('Session: ', request.session);
+            response.redirect(constants.CALLBACK_SUCCESS_REDIRECT_URL_LOCAL + request.session.authorized + '&token=' + data.access_token);
 
             // response.status(200).send('Get access token');
         } catch (err) {
@@ -99,6 +104,7 @@ router.get('/logout', (request, response) => {
 
 function getAccessToken(request) {
     const code = request.query.code;
+    console.log('Code =', code);
     const body = {
         grant_type: 'authorization_code',
         code,
@@ -131,6 +137,7 @@ function getLinkedinId(request) {
                 reject(err);
             }
             // console.log('Body', JSON.parse(body).localizedFirstName);
+            console.log(body);
             resolve(JSON.parse(body));
         });
     });
