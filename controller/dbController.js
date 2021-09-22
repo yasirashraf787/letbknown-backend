@@ -400,6 +400,25 @@ exports.Update_Draft_Content_By_ID = (req, res) => {
     }
 };
 
+exports.Delete_Draft_Content_By_ID = (req, res) => {
+    try {
+        var sql = "DELETE FROM postcontent WHERE id = " + req.params.id + " AND status = 'draft'";
+        db.query(sql, (error, result) => {
+            if (error) {
+                console.log(error);
+                res.status(500).json({ err: error });
+            }
+            else {
+                res.status(200).json({ data: result, msg: 'deleted' });
+            }
+        });
+    }
+    catch (error) {
+        console.log(error);
+        res.status(500).json({ err: error });
+    }
+};
+
 exports.UPDATE_STATUS = (req, res) => {
     try {
         const { status, content, profile } = req.body;
@@ -500,6 +519,24 @@ exports.Update_Scheduled_Content_By_ID = (req, res) => {
     }
 };
 
+exports.Delete_Scheduled_Content_By_ID = (req, res) => {
+    try {
+        var sql = "DELETE FROM postcontent WHERE id = " + req.params.id + " AND status = 'scheduled'";
+        db.query(sql, (error, result) => {
+            if (error) {
+                console.log(error);
+                res.status(500).json({ err: error });
+            }
+            else {
+                res.status(200).json({ data: result, msg: 'deleted' });
+            }
+        });
+    }
+    catch (error) {
+        console.log(error);
+        res.status(500).json({ err: error });
+    }
+};
 
 // -------------------- JOB SCHEDULER -----------------------------
 exports.Job = {

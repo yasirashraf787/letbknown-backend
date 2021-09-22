@@ -29,10 +29,12 @@ router.get('/GetTwitterSentContent', dbController.Get_Twitter_Sent_Content);
 router.get('/GetDraftContent', dbController.Get_Draft_Content);
 router.get('/GetDraftContent/:id', dbController.Get_Draft_Content_By_ID);
 router.post('/UpdateDraftContent/:id', dbController.Update_Draft_Content_By_ID);
+router.post('/DeleteDraftContent/:id', dbController.Delete_Draft_Content_By_ID);
 router.post('/UpdateStatus/:id', dbController.UPDATE_STATUS);
 router.get('/GetScheduledContent', dbController.Get_Scheduled_Content);
 router.get('/GetScheduledContent/:id', dbController.Get_Scheduled_Content_By_ID);
 router.post('/UpdateScheduledContent/:id', dbController.Update_Scheduled_Content_By_ID);
+router.post('/DeleteScheduledContent/:id', dbController.Delete_Scheduled_Content_By_ID);
 
 const storage = multer.diskStorage({
     destination: (req, file, callback) => {
