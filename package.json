@@ -9,6 +9,7 @@
     "start": "nodemon app"
   },
   "dependencies": {
+    "aws-sdk": "^2.996.0",
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
     "cron": "^1.8.2",
@@ -17,6 +18,7 @@
     "express-session": "^1.17.1",
     "jsonwebtoken": "^8.5.1",
     "multer": "^1.4.3",
+    "multer-s3": "^2.9.0",
     "mysql": "^2.18.1",
     "nodemon": "^2.0.7",
     "oauth": "^0.9.15",
