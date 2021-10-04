@@ -26,6 +26,8 @@ router.post('/Draft', dbController.Draft_Post);
 router.post('/Scheduled', dbController.Scheduled_Post);
 
 router.get('/GetSentContent', dbController.Get_Sent_Content);
+router.get('/GetSentContent/:id', dbController.Get_Sent_Content_By_ID);
+
 router.get('/GetTwitterSentContent', dbController.Get_Twitter_Sent_Content);
 
 router.get('/GetDraftContent', dbController.Get_Draft_Content);
@@ -93,7 +95,9 @@ router.post('/DeleteFile', (req, res) => {
         Bucket: 'thrumpit-videos',
         Key: 'IMG_State_Highway_62_NZ.png'
     }, (error, data) => {
-        console.log(error);
+        console.log('Error:', error);
+        console.log('Data:', data);
+
         if (error) {
             res.status(500).send(error);
         }

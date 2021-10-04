@@ -314,6 +314,25 @@ exports.Get_Sent_Content = (req, res) => {
     }
 };
 
+exports.Get_Sent_Content_By_ID = (req, res) => {
+    try {
+        db.query("SELECT * FROM postcontent WHERE id = " + req.params.id + " AND status = 'sent' ORDER BY sent_date DESC", (error, result) => {
+            if (error) {
+                console.log(error);
+                res.status(500).json({ err: error });
+            }
+            else {
+                console.log(result);
+                res.status(200).json({ data: result });
+            }
+        });
+    }
+    catch (error) {
+        console.log(error);
+        res.status(500).json({ err: error });
+    }
+};
+
 exports.Get_Twitter_Sent_Content = (req, res) => {
     try {
         db.query("SELECT * FROM postcontent WHERE status = 'sent' AND profile = 'twitter' ORDER BY sent_date DESC", (error, result) => {
