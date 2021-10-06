@@ -49,63 +49,65 @@ const storage = multer.diskStorage({
     }
 });
 
-var upload = multer({ storage: storage });
-const s3 = new aws.S3({
-    accessKeyId: 'AKIA4MMMFII2OZ7PAVPA',
-    secretAccessKey: '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'
-});
+// var upload = multer({ storage: storage });
+// const s3 = new aws.S3({
+//     accessKeyId: 'AKIA4MMMFII2OZ7PAVPA',
+//     secretAccessKey: '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'
+// });
 
-var uploadS3 = multer({
-    storage: multerS3({
-        s3: s3,
-        bucket: 'thrumpit-videos',
-        acl: 'public-read',
-        metadata: function (req, file, cb) {
-            cb(null, { fieldName: file.fieldname });
-        },
-        key: function (req, file, cb) {
-            cb(null, `IMG_${file.originalname}`)
-        }
-    })
-});
+// var uploadS3 = multer({
+//     storage: multerS3({
+//         s3: s3,
+//         bucket: 'thrumpit-videos',
+//         acl: 'public-read',
+//         metadata: function (req, file, cb) {
+//             cb(null, { fieldName: file.fieldname });
+//         },
+//         key: function (req, file, cb) {
+//             cb(null, `IMG_${file.originalname}`)
+//         }
+//     })
+// });
 
 // router.post('/UploadFile', (req, res) => {
 //     console.log('Body:', req.file);
 //     res.status(200).json({ result: req.file });
 // });
 
-router.post('/UploadFile', uploadS3.single('file'), (req, res, next) => {
-    const file = req.file;
-    if (!file) {
-        const error = new Error('Please upload a file');
-        error.httpStatusCode = 400;
-        return next(error);
-        res.send('Please upload a file');
-    }
-    else {
-        console.log('File: ', file);
-        console.log('File Location:', file.location);
-    }
+// Multer Upload to AWS S3 Bucket
 
-    res.send(file);
-});
+// router.post('/UploadFile', uploadS3.single('file'), (req, res, next) => {
+//     const file = req.file;
+//     if (!file) {
+//         const error = new Error('Please upload a file');
+//         error.httpStatusCode = 400;
+//         return next(error);
+//         res.send('Please upload a file');
+//     }
+//     else {
+//         console.log('File: ', file);
+//         console.log('File Location:', file.location);
+//     }
 
-router.post('/DeleteFile', (req, res) => {
-    s3.deleteObject({
-        Bucket: 'thrumpit-videos',
-        Key: 'IMG_State_Highway_62_NZ.png'
-    }, (error, data) => {
-        console.log('Error:', error);
-        console.log('Data:', data);
+//     res.send(file);
+// });
 
-        if (error) {
-            res.status(500).send(error);
-        }
-        else {
-            res.status(200).json({ msg: 'File has been deleted successfully', data });
-        }
-    });
-});
+// router.post('/DeleteFile', (req, res) => {
+//     s3.deleteObject({
+//         Bucket: 'thrumpit-videos',
+//         Key: 'IMG_State_Highway_62_NZ.png'
+//     }, (error, data) => {
+//         console.log('Error:', error);
+//         console.log('Data:', data);
+
+//         if (error) {
+//             res.status(500).send(error);
+//         }
+//         else {
+//             res.status(200).json({ msg: 'File has been deleted successfully', data });
+//         }
+//     });
+// });
 
 dbController.Job.StartScheduler();
 
