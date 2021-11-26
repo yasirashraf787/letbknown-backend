@@ -39,15 +39,35 @@ router.get('/getTweets', (request, response) => {
     const client = new twitter({
         consumer_key: process.env.CONSUMER_KEY, //'XJ3v59z4tm5HZEUM6AmG6w7Y8',
         consumer_secret: process.env.CONSUMER_SECRET, //'y3aeVcimtbzLO4kqoNpD7GAZewrdQ6RX6OGk16oCMlIyrTZL3z',
-        access_token: request.query.oauth_token,
-        access_token_secret: request.query.oauth_token_secret
+        access_token: request.query.access_token,
+        access_token_secret: request.query.access_token_secret
     });
 
-    client.get('tweets/1426180342180990983').then(timeline => {
+    client.get('tweets/1371393042708582400').then(timeline => {
         console.log(timeline);
     }).catch(err => {
         console.log(err);
     });
+});
+
+router.get('/getUserInfo', (request, response) => {
+    // response.send(request.query);
+    const client = new twitter({
+        consumer_key: process.env.CONSUMER_KEY,
+        consumer_secret: process.env.CONSUMER_SECRET,
+        access_token: request.query.oauth_token,
+        access_token_secret: request.query.oauth_token_secret
+    });
+    // console.log(request.query);
+    // var url = '2/users/' + request.query;
+    // console.log(url);
+    // response.send("chk");
+    // client.get('2//users/' + request.query.userId).then(result => {
+    //     console.log(result);
+    //     response.send(result);
+    // }).catch(err => {
+    //     console.log(err);
+    // });
 });
 
 router.get('/startAuth', (request, response) => {

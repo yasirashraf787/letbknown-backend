@@ -51,21 +51,26 @@ exports.SignIn = (req, res) => {
         }
 
         db.query('SELECT * FROM users WHERE email = ?', [email], async (error, results) => {
-            console.log(results);
-            const encryptedPass = await bcrypt.compare(password, results[0].password);
-            if (!results || !encryptedPass) {
-                res.status(200).json({ msg: 'Invalid Email or Password', loggedIn: false });
+            console.log(results.length);
+            if (results.length > 0) {
+                const encryptedPass = await bcrypt.compare(password, results[0].password);
+                if (!results || !encryptedPass) {
+                    res.status(200).json({ msg: 'Invalid Email or Password', loggedIn: false });
+                }
+                else {
+                    var expiry = new Date();
+                    expiry.setDate(expiry.getDate() + 7);
+
+                    const email = results[0].email;
+                    const token = jwt.sign({ email: email }, process.env.JWT_KEY, {
+                        expiresIn: parseInt(expiry.getTime() / 1000)
+                    });
+
+                    res.status(200).json({ msg: 'Login Successfuly', token: token, loggedIn: true, results });
+                }
             }
             else {
-                var expiry = new Date();
-                expiry.setDate(expiry.getDate() + 7);
-
-                const email = results[0].email;
-                const token = jwt.sign({ email: email }, process.env.JWT_KEY, {
-                    expiresIn: parseInt(expiry.getTime() / 1000)
-                });
-
-                res.status(200).json({ msg: 'Login Successfuly', token: token, loggedIn: true, results });
+                res.status(200).json({ msg: 'User not exist', loggedIn: 'user_not_exist', results });
             }
         });
 
@@ -78,8 +83,8 @@ exports.SignIn = (req, res) => {
 exports.POST_SM_Profile_Data = (req, res) => {
 
     const {
-        user_id, profile_name, profile_user_id, page_id,
-        user_access_token, page_access_token,
+        user_id, profile_name, profile_user_id, page_id, 
+        page_account_name, user_access_token, page_access_token,
         oauth_access_token, oauth_access_token_secret
     } = req.body;
     //SELECT COUNT(*) AS namesCount FROM names WHERE age = ?
@@ -104,7 +109,7 @@ exports.POST_SM_Profile_Data = (req, res) => {
                         if (result.length == 0) {
                             db.query('INSERT INTO smprofiles SET ?', {
                                 user_id: user_id, profile_name: profile_name, user_access_token: user_access_token,
-                                profile_user_id: profile_user_id, page_id: page_id, page_access_token: page_access_token
+                                profile_user_id: profile_user_id, page_id: page_id, page_account_name: page_account_name, page_access_token: page_access_token
                             }, (error, result) => {
                                 if (error) {
                                     console.log(error);
@@ -133,10 +138,45 @@ exports.POST_SM_Profile_Data = (req, res) => {
                         console.log(result);
                         if (result.length == 0) {
                             db.query('INSERT INTO smprofiles SET ?', {
-                                user_id: user_id, profile_name: profile_name,
+                                user_id: user_id, 
+                                profile_name: profile_name,
                                 profile_user_id: profile_user_id,
+                                page_account_name: page_account_name,
                                 oauth_access_token: oauth_access_token,
                                 oauth_access_token_secret: oauth_access_token_secret
+                            }, (error, result) => {
+                                if (error) {
+                                    console.log(error);
+                                    res.send('Something went wrong : ' + error);
+                                }
+                                else {
+                                    console.log(result);
+                                    res.status(200).json({ msg: 'User SM Profile Registered', result });
+                                }
+                            });
+                        }
+                        else if (result.length > 0) {
+                            console.log('Result Length: ' + result.length);
+                            res.status(200).json({ msg: 'This user is already regestered with twitter profile', result });
+                        }
+                    }
+                });
+            }
+            else if (profile_name == 'linkedin') {
+                db.query('SELECT * FROM smprofiles WHERE user_id = ' + user_id + ' AND profile_name = "linkedin"', (error, result) => {
+                    if (error) {
+                        console.log(error);
+                        res.send('Error: ', error);
+                    }
+                    else {
+                        console.log(result);
+                        if (result.length == 0) {
+                            db.query('INSERT INTO smprofiles SET ?', {
+                                user_id: user_id, 
+                                profile_name: profile_name,
+                                profile_user_id: profile_user_id,
+                                page_account_name: page_account_name,
+                                user_access_token: user_access_token
                             }, (error, result) => {
                                 if (error) {
                                     console.log(error);
