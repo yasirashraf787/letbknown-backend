@@ -356,7 +356,7 @@ exports.Get_Sent_Content = (req, res) => {
 
 exports.Get_Sent_Content_By_ID = (req, res) => {
     try {
-        db.query("SELECT * FROM postcontent WHERE id = " + req.params.id + " AND status = 'sent' ORDER BY sent_date DESC", (error, result) => {
+        db.query("SELECT * FROM postcontent WHERE user_id = " + req.params.id + " AND status = 'sent' ORDER BY sent_date DESC", (error, result) => {
             if (error) {
                 console.log(error);
                 res.status(500).json({ err: error });
@@ -413,7 +413,7 @@ exports.Get_Draft_Content = (req, res) => {
 
 exports.Get_Draft_Content_By_ID = (req, res) => {
     try {
-        db.query("SELECT * FROM postcontent WHERE id = " + req.params.id + " AND status = 'draft' ORDER BY id DESC", (error, result) => {
+        db.query("SELECT * FROM postcontent WHERE user_id = " + req.params.id + " AND status = 'draft' ORDER BY id DESC", (error, result) => {
             if (error) {
                 console.log(error);
                 res.status(500).json({ err: error });
@@ -530,7 +530,7 @@ exports.Get_Scheduled_Content = (req, res) => {
 
 exports.Get_Scheduled_Content_By_ID = (req, res) => {
     try {
-        db.query("SELECT * FROM postcontent WHERE id = " + req.params.id + " AND status = 'scheduled' ORDER BY id DESC", (error, result) => {
+        db.query("SELECT * FROM postcontent WHERE user_id = " + req.params.id + " AND status = 'scheduled' ORDER BY id DESC", (error, result) => {
             if (error) {
                 console.log(error);
                 res.status(500).json({ err: error });
