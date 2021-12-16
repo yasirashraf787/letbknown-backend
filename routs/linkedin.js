@@ -31,7 +31,8 @@ router.get('/callback_error', (request, response) => {
     // response.redirect('https://localhost:4200/home');
     console.log('Callback error', response);
     // response.redirect('https://d3rtuj6gjvv7z0.cloudfront.net/Socialmediaprofile');
-    response.redirect(constants.CALLBACK_ERROR_REDIRECT_URL_LOCAL);
+    // response.redirect(constants.CALLBACK_ERROR_REDIRECT_URL_LOCAL);
+    response.redirect(constants.CALLBACK_ERROR_REDIRECT_URL_AWS);
 });
 
 router.get('/callback', async (request, response) => {
@@ -56,7 +57,7 @@ router.get('/callback', async (request, response) => {
             console.log("Before sending request back to letbknown web app link ......")
             console.log('Data: ', data);
             console.log('Session: ', request.session);
-            response.redirect(constants.CALLBACK_SUCCESS_REDIRECT_URL_LOCAL + request.session.authorized + '&token=' + data.access_token);
+            response.redirect(constants.CALLBACK_SUCCESS_REDIRECT_URL_AWS + request.session.authorized + '&token=' + data.access_token);
 
             // response.status(200).send('Get access token');
         } catch (err) {
